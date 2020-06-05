@@ -58,7 +58,7 @@ public class RunDrtOpenBerlinScenarioWithDrtSpeedUp {
 		
 		controler.run() ;
 		
-		RunBerlinScenario.runAnalysis(controler);
+		/// RunBerlinScenario.runAnalysis(controler);
 	}
 
 }

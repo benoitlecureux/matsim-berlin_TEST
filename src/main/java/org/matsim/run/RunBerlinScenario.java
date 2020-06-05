@@ -72,7 +72,7 @@ public final class RunBerlinScenario {
 		}
 		
 		if ( args.length==0 ) {
-			args = new String[] {"scenarios/berlin-v5.5-10pct/input/berlin-v5.5-10pct.config.xml"}  ;
+			args = new String[] {"scenarios/berlin-v5.5-1pct/input/berlin-v5.5-1pct.config.xml"}  ; //config file scenario
 		}
 
 		Config config = prepareConfig( args ) ;
@@ -181,6 +181,7 @@ public final class RunBerlinScenario {
 		final Config config = ConfigUtils.loadConfig( args[ 0 ], customModulesAll );
 		
 		config.controler().setRoutingAlgorithmType( FastAStarLandmarks );
+		config.controler().setLastIteration(1);
 		
 		config.subtourModeChoice().setProbaForRandomSingleTripMode( 0.5 );
 		
@@ -238,7 +239,7 @@ public final class RunBerlinScenario {
 				TransformationFactory.DHDN_GK4,
 				"SCHLUESSEL",
 				"home",
-				"10", // TODO: scaling factor, should be 10 for 10pct scenario and 100 for 1pct scenario
+				"100", // TODO: scaling factor, should be 10 for 10pct scenario and 100 for 1pct scenario
 				"null", // visualizationScriptInputDirectory
 				modesString
 		};
