@@ -6,8 +6,12 @@ import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.network.io.MatsimNetworkReader;
 import org.matsim.core.network.io.NetworkWriter;
 
+import java.io.File;
+import java.net.URI;
+
 import java.nio.file.Path;
 import java.nio.file.Paths;
+
 
 public class networkModifier {
 
@@ -51,7 +55,13 @@ public class networkModifier {
                 151527, 15733,
                 8007, 835
         };
+/*
+        File inputDirectory = new File(args[0]);
+        File outputDirectory = new File(args[1]);
 
+        URI inputUri = inputDirectory.toURI();
+        URI outputUri = outputDirectory.toURI();
+*/
         Path inputNetwork = Paths.get(args[0]);
         Path outputNetwork = Paths.get(args[1]);
 
