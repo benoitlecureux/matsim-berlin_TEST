@@ -55,15 +55,18 @@ public class networkModifier {
                 151527, 15733,
                 8007, 835
         };
-/*
+
         File inputDirectory = new File(args[0]);
         File outputDirectory = new File(args[1]);
 
         URI inputUri = inputDirectory.toURI();
         URI outputUri = outputDirectory.toURI();
+/*
+        String inputPath = "https://svn.vsp.tu-berlin.de/repos/public-svn/matsim/scenarios/countries/de/berlin/berlin-v5.2-10pct/input/berlin-v5-network.xml.gz";
+        String outputPath = "C:\\Users\\Admin\\Documents\\Benoit\\ENTPE\\2A\\JAVA\\IntelliJ\\matsim-berlin_TEST\\ESSAI\\berlin-v5-network_TEST.xml.gz";
 */
-        Path inputNetwork = Paths.get(args[0]);
-        Path outputNetwork = Paths.get(args[1]);
+        String inputNetwork = inputUri.getPath();
+        String outputNetwork = outputUri.getPath();
 
         Network network = NetworkUtils.createNetwork();
         new MatsimNetworkReader(network).readFile(inputNetwork.toString());
