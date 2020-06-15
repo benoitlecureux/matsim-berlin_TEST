@@ -1,0 +1,37 @@
+package org.matsim.homework.useless;
+
+
+import org.matsim.api.core.v01.Id;
+import org.matsim.api.core.v01.events.LinkEnterEvent;
+
+import org.matsim.api.core.v01.events.handler.LinkEnterEventHandler;
+import org.matsim.core.scoring.EventsToActivities;
+import org.matsim.core.scoring.PersonExperiencedActivity;
+
+import java.util.HashSet;
+import java.util.Set;
+
+
+public class EventHandlerToActivityHomework implements EventsToActivities.ActivityHandler {
+
+    int[] persons = { 388773801,  42211101,  401041301,  394083201,  180886401,  198506201,  267742101,  16903201,  144010301,  44211401,  262885801,  242554201,  386358101,  178865001,  341830701,  141695401,  267001801,  260080001,  172874201,  289522801,  36232201,  383079201,  414667001,  423664601,  318531901,  385676601,  400647701,  189479001,  195858001,  254616401,  394780101,  344206901,  82536801,  339279901,  234334201,  441148801,  206601801,  332164601,  268742701,  250598401,  185717501,  397302601,  203744201,  277370901,  345871901,  313227701,  347438901,  308231101,  315678701,  336837601,  45071301,  82259201,  451610001,  311036401,  360035101,  425600801,  406039601,  482220001,  264213901,  28455001,  88306101,  235551201,  300364301,  409537101,  364913601,  35781101,  335651801,  351679401,  262004401,  369865201,  183310501,  330032701,  235290201,  175846101,  169415901,  218508801,  397851701,  177792601,  224184101,  182384101,  286523701,  415261701,  400629901,  370560601,  246899401,  285693801,  359747801,  344145001,  302451801,  341901001,  475665201,  259016501,  170756501,  435882101,  310709201,  183222901,  336551401,  197199401,  83448001,  450466701,  400693101,  276269301,  267539201,  396890001,  222036401,  171991801,  187221301,  216167501,  359134501,  393150201,  348709401,  209971801,  287039801,  206065901,  178939201,  4576801,  359424201,  296804801,  125738901,  284821801,  438809801,  445177901,  281117301,  456208401,  262601101,  256437401,  410124001,  155604901,  408130801,  288256501,  482284501,  99762101,  183650101,  330449701,  423964801,  181475301,  415370701,  144977901,  309982201,  355023601,  14339201,  185212801,  189160601,  123068201,  437460901,  245846201,  249563001};
+
+    Set<String> affectedAgents = new HashSet<>();
+/*
+    @Override
+    public void handleEvent(LinkEnterEvent linkEnterEvent) {
+
+        for(int i =0; i<links.length-1;i++){
+            String linkToString = String.valueOf(links[i]);
+            if(linkEnterEvent.getLinkId().equals(Id.createLinkId(linkToString))){
+                //System.out.println("link ID" + linkToString);
+                //System.out.println("car ID" +linkEnterEvent.getVehicleId().toString());
+                affectedAgents.add(linkEnterEvent.getVehicleId().toString());
+                }
+*/
+
+    @Override
+    public void handleActivity(PersonExperiencedActivity personExperiencedActivity) {
+
+    }
+}
