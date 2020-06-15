@@ -17,7 +17,7 @@ import org.matsim.core.scoring.ScoringFunctionFactory;
 import org.matsim.core.scoring.SumScoringFunction;
 import org.matsim.core.scoring.functions.*;
 
-public class RunScoringExample {
+public class RunScoringExample {/*
 
     private static class MyScoringFunctionFactory implements ScoringFunctionFactory {
         @Inject private Network network;
@@ -74,5 +74,5 @@ public class RunScoringExample {
                                           }
                                       });
         controler.run();
-    }
+    }*/
 }
