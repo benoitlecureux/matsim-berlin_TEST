@@ -20,61 +20,24 @@ import org.matsim.core.utils.collections.CollectionUtils;
 import org.matsim.vehicles.VehicleType;
 import org.matsim.vehicles.VehiclesFactory;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
-public class RunMultiModalExample {
+public class RunHomework2 {
     public static void main(String[] args) {
-        Config config = ConfigUtils.loadConfig("scenarios/equil/config.xml");
+        Config config = ConfigUtils.loadConfig("input/berlin-v5.5-1pct.config.xml");
 
         config.controler().setOverwriteFileSetting(OutputDirectoryHierarchy.OverwriteFileSetting.deleteDirectoryIfExists);
         config.controler().setLastIteration(3);
-        //mode change:
-        {
-            StrategyConfigGroup.StrategySettings stratSets = new StrategyConfigGroup.StrategySettings();
-            stratSets.setWeight(0.1);
-            stratSets.setStrategyName(DefaultPlanStrategiesModule.DefaultStrategy.ChangeSingleTripMode);
-            config.strategy().addStrategySettings(stratSets);
+        config.controler().setOutputDirectory("output-berlin-v5.5-1pct");
 
-            config.changeMode().setModes(new String[]{"car","pedelec"});
-        }
-        //routing:
-        {
-            //PlansCalcRouteConfigGroup.ModeRoutingParams pars = new PlansCalcRouteConfigGroup.ModeRoutingParams();
-            //pars.setMode("pedelec");
-            //pars.setTeleportedModeSpeed(25./3.6);
-            //config.plansCalcRoute().addModeRoutingParams(pars);
-            //add pedelec to network routing
-            config.plansCalcRoute().setNetworkModes(CollectionUtils.stringToSet("car,pedelec"));
-        }
-        {
-            PlansCalcRouteConfigGroup.ModeRoutingParams pars = new PlansCalcRouteConfigGroup.ModeRoutingParams();
-            pars.setMode("walk");
-            pars.setTeleportedModeSpeed(4./3.6);
-            config.plansCalcRoute().addModeRoutingParams(pars);
-        }
-        //add pedelec to the qsim
-        {
-            config.qsim().setMainModes(CollectionUtils.stringToSet("car,pedelec"));
-            config.qsim().setVehiclesSource(QSimConfigGroup.VehiclesSource.modeVehicleTypesFromVehiclesData);
-            config.qsim().setLinkDynamics(QSimConfigGroup.LinkDynamics.PassingQ);
-        }
-        //scoring:
-        {
-            PlanCalcScoreConfigGroup.ModeParams pars = new PlanCalcScoreConfigGroup.ModeParams("pedelec");
-            pars.setConstant(100.);
-            config.planCalcScore().addModeParams(pars);
-        }
-
-        //===
         Scenario scenario = ScenarioUtils.loadScenario(config);
 
-        //spread out departure times
-        for(Person person : scenario.getPopulation().getPersons().values()){
-            for(PlanElement planElement : person.getSelectedPlan().getPlanElements()){
-                if(planElement instanceof Activity) {
-                    ((Activity) planElement).setEndTime(5*3600+1800+3600*Math.random());
-                }
-            }
+        //Network creation
+
+        ArrayList<Link> newlinks = new ArrayList<Link>;
+        for (int ii=0; ii<=size(newlinks)-1; ii++){
+            scenario.getNetwork().addLink(newlinks[ii]);
         }
 
         //make network multimodal
@@ -103,7 +66,7 @@ public class RunMultiModalExample {
         }
 
         //===
-        Controler controler = new Controler(scenario);
+        org.matsim.core.controler.Controler controler = new Controler(scenario);
 
         controler.run();
     }
