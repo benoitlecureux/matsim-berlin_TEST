@@ -4,6 +4,7 @@ import org.apache.log4j.Logger;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.network.Link;
+import org.matsim.api.core.v01.network.NetworkWriter;
 import org.matsim.api.core.v01.network.Node;
 import org.matsim.core.config.Config;
 import org.matsim.core.config.ConfigGroup;
@@ -12,9 +13,11 @@ import org.matsim.core.config.groups.VspExperimentalConfigGroup;
 import org.matsim.core.controler.Controler;
 import org.matsim.core.controler.OutputDirectoryHierarchy;
 import org.matsim.core.population.routes.NetworkRoute;
+import org.matsim.core.population.routes.RouteUtils;
 import org.matsim.core.scenario.ScenarioUtils;
 import org.matsim.pt.transitSchedule.api.*;
 import org.matsim.pt.utils.TransitScheduleValidator;
+import org.matsim.vehicles.Vehicle;
 import org.matsim.vehicles.VehicleType;
 import org.matsim.vehicles.VehiclesFactory;
 
@@ -28,11 +31,11 @@ public class RunHomework2 {
     private final static Logger LOG = Logger.getLogger(RunHomework2.class);
 
     public static void main(String[] args) {
-        //Config config = ConfigUtils.loadConfig("input/berlin-v5.5-1pct.config.xml");
-        Config config = ConfigUtils.loadConfig("../equil/config.xml");
+        Config config = ConfigUtils.loadConfig("input/berlin-v5.5-1pct.config.xml");
+        //Config config = ConfigUtils.loadConfig("../equil/config.xml");
 
-        //config.controler().setOutputDirectory("output-berlin-v5.5-1pct");
-        config.controler().setOutputDirectory("../equil/output");
+        config.controler().setOutputDirectory("output-berlin-v5.5-1pct");
+        //config.controler().setOutputDirectory("../equil/output");
         config.controler().setOverwriteFileSetting(OutputDirectoryHierarchy.OverwriteFileSetting.deleteDirectoryIfExists);
         config.controler().setLastIteration(0);
 
@@ -71,6 +74,8 @@ public class RunHomework2 {
             Node node2 = nodesNewLine.get(ii+1);
             scenario.getNetwork().addLink(scenario.getNetwork().getFactory().createLink(Id.createLinkId("linkNewLine"+(ii+1)), node1, node2));
             scenario.getNetwork().getLinks().get(Id.get("linkNewLine"+(ii+1), Link.class)).setAllowedModes(Collections.singleton("pt"));
+            scenario.getNetwork().getLinks().get(Id.get("linkNewLine"+(ii+1), Link.class)).setFreespeed(16.67);
+            scenario.getNetwork().getLinks().get(Id.get("linkNewLine"+(ii+1), Link.class)).setCapacity(100000.0);
             linkIdsNewLine.add(scenario.getNetwork().getLinks().get(Id.createLinkId("linkNewLine"+(ii+1))).getId());
         }
 
@@ -106,27 +111,41 @@ public class RunHomework2 {
         //creating list of transit route stops
         ArrayList<TransitRouteStop> listTransitRouteStop = new ArrayList<>();
         for (int ii=0; ii<=size(newTransitStopFacilities)-1; ii++){
-            listTransitRouteStop.add(scenario.getTransitSchedule().getFactory().createTransitRouteStop(newTransitStopFacilities.get(ii), 1.,2.));
+            TransitRouteStop newTransitRouteStop = scenario.getTransitSchedule().getFactory().createTransitRouteStop(newTransitStopFacilities.get(ii), 0.,0.);
+            listTransitRouteStop.add(newTransitRouteStop);
         }
 
         // creating network route
-        NetworkRoute networkRoute = new NetworkRoute();
+        NetworkRoute networkRoute = RouteUtils.createNetworkRoute(linkIdsNewLine, scenario.getNetwork());
         networkRoute.setLinkIds(linkIdsNewLine.get(0), linkIdsNewLine, linkIdsNewLine.get(linkIdsNewLine.size() - 1));
+
+        TransitLine newTransitLineUBahn = scenario.getTransitSchedule().getFactory().createTransitLine(Id.create("newTransitLineUBahn", TransitLine.class));
+
         //creating new transit route and setting params
         TransitRoute newTransitRouteUBahn = scenario.getTransitSchedule().getFactory().createTransitRoute(Id.create("newTransitRouteUBahn",
             TransitRoute.class), networkRoute, listTransitRouteStop,"pt");
         newTransitRouteUBahn.setTransportMode("rail");
 
+        //creating new transit line and adding route
+        newTransitLineUBahn.addRoute(newTransitRouteUBahn);
+        scenario.getTransitSchedule().addTransitLine(newTransitLineUBahn);
+
         // create schedule legs
         TransitScheduleFactory tsf = scenario.getTransitSchedule().getFactory();
-        for (double ii = (4*60.+30)*60.; ii<(23*60.+59)*60.; ii = ii+(4*30.)) {
+        VehiclesFactory vf = scenario.getVehicles().getFactory();
+        for (double ii = (4*60.+30)*60.; ii<(23*60.+59)*60.; ii = ii+(4*60.)) {
             Departure departure = tsf.createDeparture(Id.create("newDep"+ii, Departure.class), ii);
+            Vehicle vehicle = vf.createVehicle(Id.createVehicleId("newVeh"+ii), scenario.getTransitVehicles().getVehicleTypes().get(Id.create("U-Bahn_veh_type", VehicleType.class)));
+            scenario.getTransitVehicles().addVehicle(vehicle);
+            departure.setVehicleId(vehicle.getId());
             newTransitRouteUBahn.addDeparture(departure);
         }
 
-        //creating new transit line and adding route
-        TransitLine newTransitLineUBahn = scenario.getTransitSchedule().getFactory().createTransitLine(Id.create("newTransitLineUBahn", TransitLine.class));
-        newTransitLineUBahn.addRoute(newTransitRouteUBahn);
+        TransitScheduleWriter tsw = new TransitScheduleWriter(scenario.getTransitSchedule());
+        tsw.writeFile("transitScheduleTEST.xml");
+        NetworkWriter nww = new NetworkWriter(scenario.getNetwork());
+        nww.write("newNetwork.xml");
+        System.out.println("PRINTING");
 
         // validator
         TransitScheduleValidator.ValidationResult result = TransitScheduleValidator.validateAll(scenario.getTransitSchedule(), scenario.getNetwork());
@@ -139,19 +158,6 @@ public class RunHomework2 {
         for (TransitScheduleValidator.ValidationResult.ValidationIssue issue : result.getIssues()) {
             LOG.warn(issue.getMessage());
         }
-
-        /*add vehicle types
-        VehiclesFactory vf = scenario.getVehicles().getFactory();
-        {
-            VehicleType vehicleType = vf.createVehicleType(Id.create("pedelec",VehicleType.class));
-            vehicleType.setMaximumVelocity(10);
-            scenario.getVehicles().addVehicleType(vehicleType);
-        }
-        {
-            VehicleType vehicleType = vf.createVehicleType(Id.create("car",VehicleType.class));
-            scenario.getVehicles().addVehicleType(vehicleType);
-        }
-        */
 
         //===
         Controler controler = new Controler(scenario);
