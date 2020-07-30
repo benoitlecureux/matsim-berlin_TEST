@@ -1,6 +1,7 @@
 package org.matsim.run;
 
 import org.apache.log4j.Logger;
+import org.matsim.core.network.algorithms.NetworkCleaner;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.Scenario;
 import org.matsim.api.core.v01.network.Link;
@@ -14,6 +15,7 @@ import org.matsim.core.controler.Controler;
 import org.matsim.core.controler.OutputDirectoryHierarchy;
 import org.matsim.core.population.routes.NetworkRoute;
 import org.matsim.core.population.routes.RouteUtils;
+import org.matsim.core.utils.collections.CollectionUtils;
 import org.matsim.pt.transitSchedule.api.*;
 import org.matsim.pt.utils.TransitScheduleValidator;
 import org.matsim.vehicles.Vehicle;
@@ -39,10 +41,11 @@ public class RunHomework2 {
         }
         Config config = RunBerlinScenario.prepareConfig( args ) ;
         // setting config parameters
-        config.network().setInputFile("berlin-v5.5-network.xml.gz");
+        //config.network().setInputFile("berlin-v5.5-network.xml.gz");
         config.controler().setOutputDirectory("output-berlin-v5.5-1pct");
         config.controler().setOverwriteFileSetting(OutputDirectoryHierarchy.OverwriteFileSetting.deleteDirectoryIfExists);
         config.controler().setLastIteration(50);
+        //config.plansCalcRoute().setInsertingAccessEgressWalk( true );
 
         // trying to bypass out of memory & consistency errors
         config.vspExperimental().setVspDefaultsCheckingLevel(VspExperimentalConfigGroup.VspDefaultsCheckingLevel.ignore);
@@ -269,6 +272,8 @@ public class RunHomework2 {
             LOG.warn(issue.getMessage());
         }
 
+
+        //new NetworkCleaner().run(scenario.getNetwork());
         //===
         Controler controler = RunBerlinScenario.prepareControler( scenario ) ;
 
@@ -317,7 +322,7 @@ public class RunHomework2 {
 
         for(int i =0; i<links.length-1;i++){
             String linkToString = String.valueOf(links[i]);
-            //network.getLinks().get(Id.createLinkId(linkToString)).setAllowedModes(Collections.singleton("walk"));
+            network.getLinks().get(Id.get(linkToString, Link.class)).setAllowedModes(CollectionUtils.stringToSet("freight"));
         }
     }
 
